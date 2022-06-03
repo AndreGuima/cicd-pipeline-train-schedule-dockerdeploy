@@ -47,14 +47,20 @@ pipeline {
                 milestone(1)
                 withCredentials([usernamePassword(credentialsId: 'jenkins_user_and_pass', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
+                        sh 'echo 0'
                         sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull andrepaivaguimaraes/trainschedule:${env.BUILD_NUMBER}\""
+                        sh 'echo 1'
                         try {
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker stop trainschedule\""
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker rm trainschedule\""
+                            sh 'echo 2'
                         } catch (err) {
                             echo: 'caught error: $err'
+                            sh 'echo 3'
                         }
+                        sh 'echo 4'
                         sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker run --restart always --name train-schedule -p 8080:8080 -d andrepaivaguimaraes/trainschedule:${env.BUILD_NUMBER}\""
+                        sh 'echo 5'
                     }
                 }
             }
