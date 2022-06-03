@@ -2,8 +2,10 @@ pipeline {
     agent any
     stages {
         stage('Initialize'){
-            def dockerHome = tool 'myDocker'
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
+            RUN curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-20.10.9.tgz \
+              && tar xzvf docker-20.10.9.tgz \
+              && mv docker/docker /usr/local/bin \
+              && rm -r docker docker-20.10.9.tgz
         }    
         
         stage('Build') {
